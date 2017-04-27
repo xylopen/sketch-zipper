@@ -10,7 +10,7 @@ function zipSketch(url) {
   console.log(url + '폴더를 압축해' + url + '.sketch 파일로 만듭니다.');
   recursive(url, function (err, newFilesPaths) {
 
-    fs.readFile(url + '.sketch', function(err, data) {
+    fs.readFile(__dirname + '/sketch.sketch', function(err, data) {
       JSZip.loadAsync(data).then(function(zip) {
 
         var files = Object.keys(zip.files);
