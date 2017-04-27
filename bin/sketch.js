@@ -23,7 +23,6 @@ function zipSketch(url) {
         // write all new file
         newFilesPaths.forEach(function (path) {
           var zipPath = path.split('/').splice(1).join('/');
-          console.log(zipPath);
           var newFile = fs.readFileSync(path);
           zip.file(zipPath, newFile);
         });
@@ -32,6 +31,9 @@ function zipSketch(url) {
         zip
           .generateNodeStream({ type:'nodebuffer', streamFiles:true })
           .pipe(fs.createWriteStream(url + '.sketch'))
+          .on('close', function () {
+            console.log('done');
+          })
 
       })
     });
@@ -42,8 +44,20 @@ function zipSketch(url) {
 function unzipSketch(url) {
   var parsePath = path.parse(url);
   var dirPath = path.dirname(url) + '/' + parsePath.name;
-  console.log(url + '파일을' + dirPath + '폴더에 풀겠습니다.');
-  fs.createReadStream(url).pipe(unzip.Extract({ path: dirPath }));
+  console.log(url + '파일을' + dirPath + '폴더에 압축해제합니다.');
+  fs.createReadStream(url).pipe(unzip.Extract({ path: dirPath }))
+    .on('close', function () {
+      console.log(dirPath + '폴더의 모든 json파일을 리포맷팅합니다.');
+      recursive(dirPath, ['*.png'] ,function (err, filesPaths) {
+        filesPaths.forEach(function (fileUrl) {
+          fs.readFile(fileUrl, "utf-8", function (err, data) {
+            console.log(fileUrl);
+            fs.writeFile(fileUrl, JSON.stringify(JSON.parse(data), null, 2));
+            console.log('done');
+          });
+        });
+      })
+    });
 }
 
 
