@@ -1,6 +1,7 @@
 ## Install
 ```
-npm install sketch-zipper -g
+git clone https://github.com/KimDal-hyeong/sketch-zipper.git
+sudo npm install -g
 ```
 전역에 설치해서 사용합니다.
 
