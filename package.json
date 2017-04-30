@@ -2,7 +2,7 @@
   "name": "sketch-zipper",
   "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {},
   "preferGlobal": true,
   "bin": {
