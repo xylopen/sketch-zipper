@@ -9,8 +9,8 @@ var commander = require('commander');
 function unzipSketch(sketchPath) {
   var parsePath = path.parse(sketchPath);
   var dirPath = path.dirname(sketchPath) + '/' + parsePath.name;
-  console.log(sketchPath + 'unzip in' + dirPath + 'and all json file reformatting.');
-  fs.createReadStream(url).pipe(unzip.Extract({ path: dirPath }))
+  console.log(sketchPath + ' unzip in ' + dirPath + ' and all json file reformatting.');
+  fs.createReadStream(sketchPath).pipe(unzip.Extract({ path: dirPath }))
     .on('close', function () {
       // json reformatting
       recursive(dirPath, ['*.png'] ,function (err, filesPaths) {
@@ -26,7 +26,7 @@ function unzipSketch(sketchPath) {
 }
 
 function zipSketch(dirPath) {
-  console.log(dirPath + 'generate sketch file.');
+  console.log(dirPath + ' generate sketch file.');
   recursive(dirPath, function (err, newFilesPaths) {
 
     fs.readFile(__dirname + '/sketch.sketch', function(err, data) {
@@ -49,7 +49,7 @@ function zipSketch(dirPath) {
         // sketch generate
         zip
           .generateNodeStream({ type:'nodebuffer', streamFiles:true })
-          .pipe(fs.createWriteStream(url + '.sketch'))
+          .pipe(fs.createWriteStream(dirPath + '.sketch'))
           .on('close', function () {
             console.log('done');
           })
@@ -61,7 +61,7 @@ function zipSketch(dirPath) {
 }
 
 commander
-  .arguments('<sketch>')
+  .arguments('<sketch-zipper>')
   .option('-u, --unzip <path>', 'path of sektch file.', unzipSketch)
   .option('-z, --zip <path>', 'path of unzipped sketch directory.', zipSketch)
   .parse(process.argv);
