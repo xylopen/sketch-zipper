@@ -6,9 +6,28 @@ var JSZip = require('jszip');
 var unzip = require('unzip2');
 var commander = require('commander');
 
-function zipSketch(url) {
-  console.log(url + '폴더를 압축해' + url + '.sketch 파일로 만듭니다.');
-  recursive(url, function (err, newFilesPaths) {
+function unzipSketch(sketchPath) {
+  var parsePath = path.parse(sketchPath);
+  var dirPath = path.dirname(sketchPath) + '/' + parsePath.name;
+  console.log(sketchPath + 'unzip in' + dirPath + 'and all json file reformatting.');
+  fs.createReadStream(url).pipe(unzip.Extract({ path: dirPath }))
+    .on('close', function () {
+      // json reformatting
+      recursive(dirPath, ['*.png'] ,function (err, filesPaths) {
+        filesPaths.forEach(function (filePath) {
+          if(path.extname(filePath) == '.json'){
+            fs.readFile(filePath, "utf-8", function (err, data) {
+              fs.writeFile(filePath, JSON.stringify(JSON.parse(data), null, 2));
+            });
+          }
+        });
+      })
+    });
+}
+
+function zipSketch(dirPath) {
+  console.log(dirPath + 'generate sketch file.');
+  recursive(dirPath, function (err, newFilesPaths) {
 
     fs.readFile(__dirname + '/sketch.sketch', function(err, data) {
       JSZip.loadAsync(data).then(function(zip) {
@@ -41,27 +60,8 @@ function zipSketch(url) {
   });
 }
 
-function unzipSketch(url) {
-  var parsePath = path.parse(url);
-  var dirPath = path.dirname(url) + '/' + parsePath.name;
-  console.log(url + '파일을' + dirPath + '폴더에 압축해제하고 모든 json파일을 리포맷팅합니다.');
-  fs.createReadStream(url).pipe(unzip.Extract({ path: dirPath }))
-    .on('close', function () {
-      recursive(dirPath, ['*.png'] ,function (err, filesPaths) {
-        filesPaths.forEach(function (fileUrl) {
-          if(path.extname(fileUrl) == '.json'){
-            fs.readFile(fileUrl, "utf-8", function (err, data) {
-              fs.writeFile(fileUrl, JSON.stringify(JSON.parse(data), null, 2));
-            });
-          }
-        });
-      })
-    });
-}
-
-
 commander
   .arguments('<sketch>')
-  .option('-z, --zip <url>', '압축할 폴더의 url을 입력하세요.', zipSketch)
-  .option('-u, --unzip <url>', '압축을 풀 sketch파일의 url을 입력하세요.', unzipSketch)
+  .option('-u, --unzip <path>', 'path of sektch file.', unzipSketch)
+  .option('-z, --zip <path>', 'path of unzipped sketch directory.', zipSketch)
   .parse(process.argv);
