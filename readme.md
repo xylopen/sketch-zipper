@@ -12,15 +12,14 @@ or
 $ sketch-zipper -u ./file-name-path.sketch
 
 ```
-File of sketch unzip to drectory in same path.  
+Creates an unzipped source folder in the same path as the sketch file.  
 
 ```
 $ sketch-zipper --zip ./directory-path
 or
 $ sketch-zipper -z ./directory-path
 ```
-Generate from folder containing json and files (unzipped sketch) to file of sketch.
-
+Generate a sketch file from the source folder.
 
 ## License
 MIT
