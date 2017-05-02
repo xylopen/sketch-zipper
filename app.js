@@ -29,15 +29,11 @@ function zipSketch(dirPath) {
   console.log(dirPath + ' generate sketch file.');
   recursive(dirPath, function (err, newFilesPaths) {
 
+    // read dummy sketch file
     fs.readFile(__dirname + '/sketch.sketch', function(err, data) {
       JSZip.loadAsync(data).then(function(zip) {
 
         var files = Object.keys(zip.files);
-
-        // remove all file
-        files.forEach(function (filePath) {
-          zip.remove(filePath);
-        });
 
         // write all new file
         newFilesPaths.forEach(function (path) {
