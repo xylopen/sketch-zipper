@@ -37,7 +37,7 @@ function zipSketch(dirPath) {
 
         // write all new file
         newFilesPaths.forEach(function (path) {
-          var zipPath = path.split('/').splice(1).join('/');
+          var zipPath = path.substr(dirPath.length + 1);
           var newFile = fs.readFileSync(path);
           zip.file(zipPath, newFile);
         });
