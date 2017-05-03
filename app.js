@@ -33,7 +33,6 @@ function unzipSketch(sketchPath) {
 function zipSketch(drectoryPath) {
   var basename = path.basename(drectoryPath);
   drectoryPath = drectoryPath.split(' ').join('\\ ');
-  basename = basename.split(' ').join('\\ ');
   var commandString = "cd " + drectoryPath + "\n zip -r -X '../" + basename + ".sketch' * \n";
   console.log('$ ', commandString);
   exec(commandString, function (error, stdout, stderr) {
