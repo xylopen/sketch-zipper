@@ -8,7 +8,11 @@ var exec = require('child_process').exec;
 
 function unzipSketch(sketchPath) {
   var directoryPath = path.dirname(sketchPath) + '/' + path.basename(sketchPath, '.sketch');
-  exec("unzip -o " + sketchPath + " -d " + directoryPath, function (error, stdout, stderr) {
+  var blankReplacedDirectoryPath = directoryPath.split(' ').join('\\ ');
+  sketchPath = sketchPath.split(' ').join('\\ ');
+  var commandString = "unzip -o " + sketchPath + " -d " + blankReplacedDirectoryPath;
+  console.log('$ ', commandString);
+  exec(commandString, function (error, stdout, stderr) {
     console.log(stderr);
     if (error !== null) {
       console.log('exec error: ' + error);
@@ -28,7 +32,11 @@ function unzipSketch(sketchPath) {
 
 function zipSketch(drectoryPath) {
   var basename = path.basename(drectoryPath);
-  exec("cd " + drectoryPath + "\n zip -r -X '../" + basename + ".sketch' * \n", function (error, stdout, stderr) {
+  drectoryPath = drectoryPath.split(' ').join('\\ ');
+  basename = basename.split(' ').join('\\ ');
+  var commandString = "cd " + drectoryPath + "\n zip -r -X '../" + basename + ".sketch' * \n";
+  console.log('$ ', commandString);
+  exec(commandString, function (error, stdout, stderr) {
     console.log(stderr);
     if (error !== null) {
       console.log('exec error: ' + error);
