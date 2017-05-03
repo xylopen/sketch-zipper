@@ -1,3 +1,9 @@
+## Sketch-zipper
+
+You can unzip the sketch file or   
+create a sketch file again from the unzipped source folder  
+on command line.
+
 ## Install
 ```
 npm install -g sketch-zipper
