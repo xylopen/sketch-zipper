@@ -17,12 +17,11 @@ function unzipSketch(sketchPath) {
       filesPaths.forEach(function (filePath) {
         if (path.extname(filePath) == '.json') {
           fs.readFile(filePath, "utf-8", function (err, data) {
-            fs.writeFile(filePath, JSON.stringify(JSON.parse(data), null, 2), function () {
-              console.log(sketchPath + ' unzip in ' + directoryPath + ' and all json file reformatting.');
-            });
+            fs.writeFile(filePath, JSON.stringify(JSON.parse(data), null, 2));
           });
         }
       });
+      console.log(sketchPath + ' unzip in ' + directoryPath + ' and all json file reformatting.');
     });
   })
 }
@@ -34,7 +33,7 @@ function zipSketch(drectoryPath) {
     if (error !== null) {
       console.log('exec error: ' + error);
     }
-    console.log(dirPath + ' generate sketch file.');
+    console.log(drectoryPath + ' generate sketch file.');
   });
 }
 
