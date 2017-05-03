@@ -1,60 +1,43 @@
 #!/usr/bin/env node
-var fs = require('fs');
 var path = require('path');
+var fs = require('fs');
 var recursive = require('recursive-readdir');
-var JSZip = require('jszip');
-var unzip = require('unzip2');
 var commander = require('commander');
+var exec = require('child_process').exec;
+
 
 function unzipSketch(sketchPath) {
-  var parsePath = path.parse(sketchPath);
-  var dirPath = path.dirname(sketchPath) + '/' + parsePath.name;
-  console.log(sketchPath + ' unzip in ' + dirPath + ' and all json file reformatting.');
-  fs.createReadStream(sketchPath).pipe(unzip.Extract({ path: dirPath }))
-    .on('close', function () {
-      // json reformatting
-      recursive(dirPath, ['*.png'] ,function (err, filesPaths) {
-        filesPaths.forEach(function (filePath) {
-          if(path.extname(filePath) == '.json'){
-            fs.readFile(filePath, "utf-8", function (err, data) {
-              fs.writeFile(filePath, JSON.stringify(JSON.parse(data), null, 2));
+  var directoryPath = path.dirname(sketchPath) + '/' + path.basename(sketchPath, '.sketch');
+  exec("unzip -o " + sketchPath + " -d " + directoryPath, function (error, stdout, stderr) {
+    console.log(stderr);
+    if (error !== null) {
+      console.log('exec error: ' + error);
+    }
+    recursive(directoryPath, ['*.png'], function (err, filesPaths) {
+      filesPaths.forEach(function (filePath) {
+        if (path.extname(filePath) == '.json') {
+          fs.readFile(filePath, "utf-8", function (err, data) {
+            fs.writeFile(filePath, JSON.stringify(JSON.parse(data), null, 2), function () {
+              console.log(sketchPath + ' unzip in ' + directoryPath + ' and all json file reformatting.');
             });
-          }
-        });
-      })
+          });
+        }
+      });
     });
+  })
 }
 
-function zipSketch(dirPath) {
-  console.log(dirPath + ' generate sketch file.');
-  recursive(dirPath, function (err, newFilesPaths) {
-
-    // read dummy sketch file
-    fs.readFile(__dirname + '/sketch.sketch', function(err, data) {
-      JSZip.loadAsync(data).then(function(zip) {
-
-        var files = Object.keys(zip.files);
-
-        // write all new file
-        newFilesPaths.forEach(function (path) {
-          var zipPath = path.substr(dirPath.length + 1);
-          var newFile = fs.readFileSync(path);
-          zip.file(zipPath, newFile);
-        });
-
-        // sketch generate
-        zip
-          .generateNodeStream({ type:'nodebuffer', streamFiles:true })
-          .pipe(fs.createWriteStream(dirPath + '.sketch'))
-          .on('close', function () {
-            console.log('done');
-          })
-
-      })
-    });
-
+function zipSketch(drectoryPath) {
+  var basename = path.basename(drectoryPath);
+  exec("cd " + drectoryPath + "\n zip -r -X '../" + basename + ".sketch' * \n", function (error, stdout, stderr) {
+    console.log(stderr);
+    if (error !== null) {
+      console.log('exec error: ' + error);
+    }
+    console.log(dirPath + ' generate sketch file.');
   });
 }
+
 
 commander
   .arguments('<sketch-zipper>')
