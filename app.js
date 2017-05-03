@@ -33,7 +33,7 @@ function zipSketch(drectoryPath) {
     if (error !== null) {
       console.log('exec error: ' + error);
     }
-    console.log(drectoryPath + ' generate sketch file.');
+    console.log('generate sketch file from ' + drectoryPath);
   });
 }
 
